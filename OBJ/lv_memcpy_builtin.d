@@ -1,0 +1,13 @@
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\lv_memcpy_builtin.c
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\lv_mem.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\../lv_conf_internal.h
+..\obj\lv_memcpy_builtin.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\../lv_conf_kconfig.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\lv_conf.h
+..\obj\lv_memcpy_builtin.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+..\obj\lv_memcpy_builtin.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\lv_types.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\lv_memcpy_builtin.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\lv_assert.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\lv_log.h
+..\obj\lv_memcpy_builtin.o: ..\LVGL\src\misc\lv_math.h
