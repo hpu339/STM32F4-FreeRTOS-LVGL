@@ -283,7 +283,7 @@ static unsigned char dp_download_switch1_handle(const unsigned char value[], uns
     LED1_mcu(switch1);
     //There should be a report after processing the DP
     ret = mcu_dp_bool_update(DPID_SWITCH1,switch1);
-    mcu_dp_value_update(DPID_LED_1,switch1 && 255);
+    mcu_dp_value_update(DPID_LED_1,switch1*255);
     if(ret == SUCCESS)
         return SUCCESS;
     else
