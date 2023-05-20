@@ -147,7 +147,7 @@ static void heat_beat_check(void)
 static void product_info_update(void)
 {
     unsigned char length = 0;
-    unsigned char str[10] = {0};
+    //unsigned char str[10] = {0};
     
     length = set_wifi_uart_buffer(length, "{\"p\":\"", my_strlen("{\"p\":\""));
     length = set_wifi_uart_buffer(length,(unsigned char *)PRODUCT_KEY,my_strlen((unsigned char *)PRODUCT_KEY));

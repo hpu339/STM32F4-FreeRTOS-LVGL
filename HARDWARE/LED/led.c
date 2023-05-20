@@ -2,7 +2,7 @@
  * @Author: Yang Lixin
  * @Date: 2023-04-30 20:03:58
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-05-15 19:18:33
+ * @LastEditTime: 2023-05-19 20:21:30
  * @Description: 
  */
 #include "led.h" 
@@ -38,6 +38,7 @@ void LED_Init(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;			//上拉
 	GPIO_Init(GPIOE, &GPIO_InitStructure);					//初始化GPIO
 	GPIO_SetBits(GPIOE,GPIO_Pin_5);			//GPIOF9,F10设置高，灯灭
+	GPIO_SetBits(GPIOE,GPIO_Pin_6);			//GPIOF9,F10设置高，灯灭
 
 }
 

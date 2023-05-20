@@ -21,6 +21,7 @@
 #define __WIFI_H_
 
 //#include "stm32f1xx.h"
+#include<stdbool.h>
 #include "stdio.h"
 #include "string.h"
 #include "protocol.h"

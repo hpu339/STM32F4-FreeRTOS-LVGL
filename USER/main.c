@@ -3,9 +3,11 @@
  * @Author: Yang Lixin
  * @Date: 2023-04-10 20:04:02
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-05-16 11:19:41
+ * @LastEditTime: 2023-05-19 20:32:02
  * @Description: 
  */
+
+//#include<stdbool.h>
 #include "sys.h"
 #include "delay.h"
 #include "usart.h"
@@ -60,14 +62,18 @@ SemaphoreHandle_t MutexSemaphore;	//互斥信号量
  * 					全局变量声明
  * 
  ***************** *****************************************/
-uint8_t DHT11_temp_int;				//温度变量整数部分
-uint8_t DHT11_temp_flot;			//温度变量小数部分
-uint8_t DHT11_humi_int;				//湿度变量整数部分
 
-uint16_t SHT30_temp;
-uint16_t SHT30_humi;
+uint16_t SHT30_temp;				//温度三位数
+uint16_t SHT30_humi;				//湿度
+uint32_t sgp30_dat,CO2Data,TVOCData;//气体数据、CO2、TVOC
 
-uint32_t sgp30_dat,CO2Data,TVOCData;
+uint8_t LED1_Light_Value;			//LED1灯的亮度
+bool Switch1_State_bool = 0;			//开关1状态
+bool Switch2_State_bool = 0;			//开关2状态
+
+
+
+
 int main(void)
 { 
 	
@@ -153,19 +159,19 @@ void dht11_task(void *pvParameters)
 		//DHT11_Read_Data(&DHT11_temp_int,&DHT11_temp_flot,&DHT11_humi_int);
 		SHT30_read_result(0x44,&SHT30_temp,&SHT30_humi);
 
-		// mcu_dp_value_update(DPID_TEMP_CURRENT,DHT11_temp_int*10+DHT11_temp_flot);
-		// mcu_dp_value_update(DPID_HUMIDITY_VALUE,DHT11_humi_int);
-		mcu_dp_value_update(DPID_TEMP_CURRENT,26*10+3);
-		mcu_dp_value_update(DPID_HUMIDITY_VALUE,47);
+		mcu_dp_value_update(DPID_TEMP_CURRENT,SHT30_temp);
+		mcu_dp_value_update(DPID_HUMIDITY_VALUE,SHT30_humi);
+		// mcu_dp_value_update(DPID_TEMP_CURRENT,26*10+3);
+		// mcu_dp_value_update(DPID_HUMIDITY_VALUE,47);
 		SGP30_Write(0x20,0x08);
 		sgp30_dat = SGP30_Read();//读取SGP30的值
 		CO2Data = (sgp30_dat & 0xffff0000) >> 16;
 		TVOCData = sgp30_dat & 0x0000ffff;
 
-		// mcu_dp_value_update(DPID_TVOC,TVOCData);
-		// mcu_dp_value_update(DPID_CO2_VALUE,CO2Data);
-		mcu_dp_value_update(DPID_TVOC,24);
-		mcu_dp_value_update(DPID_CO2_VALUE,445);
+		mcu_dp_value_update(DPID_TVOC,TVOCData);
+		mcu_dp_value_update(DPID_CO2_VALUE,CO2Data);
+		// mcu_dp_value_update(DPID_TVOC,24);
+		// mcu_dp_value_update(DPID_CO2_VALUE,445);
 		
 		vTaskDelay(1000);
 	}

@@ -29,6 +29,18 @@
 ******************************************************************************/
 
 #include "wifi.h"
+#include "my_gui.h"
+//#include "lvgl.h"
+
+/****************** ****************************************
+ * 
+ * 					全局变量声明
+ * 
+ ***************** *****************************************/
+extern bool Switch1_State_bool;     //开关1状态
+extern bool Switch2_State_bool;	    //开关2状态
+
+
 
 
 #ifdef WEATHER_ENABLE
@@ -149,11 +161,11 @@ void all_data_update(void)
     mcu_dp_value_update(DPID_HUMIDITY_VALUE,89); //VALUE型数据上报;	当前湿度
     mcu_dp_value_update(DPID_CO2_VALUE,450); //VALUE型数据上报;
     mcu_dp_value_update(DPID_TVOC,0); //VALUE型数据上报;
-    mcu_dp_value_update(DPID_LED_1,20); //VALUE型数据上报;		当前灯1
+    mcu_dp_value_update(DPID_LED_1,0); //VALUE型数据上报;		当前灯1
     mcu_dp_value_update(DPID_LED2,0); //VALUE型数据上报;			当前灯2
     mcu_dp_value_update(DPID_LED3,0); //VALUE型数据上报;			当前灯3
-    mcu_dp_bool_update(DPID_SWITCH1,0); //BOOL型数据上报;			当前开关1
-    mcu_dp_bool_update(DPID_SWITCH2,0); //BOOL型数据上报;			当前开关2
+    mcu_dp_bool_update(DPID_SWITCH1,Switch1_State_bool); //BOOL型数据上报;			当前开关1
+    mcu_dp_bool_update(DPID_SWITCH2,Switch1_State_bool); //BOOL型数据上报;			当前开关2
     mcu_dp_bool_update(DPID_SWITCH3,0); //BOOL型数据上报;			当前开关3
 
    
@@ -174,23 +186,24 @@ void all_data_update(void)
 使用说明 : 可下发可上报类型,需要在处理完数据后上报处理结果至app
 *****************************************************************************/
 
-
+extern uint8_t LED1_Light_Value;
+extern lv_obj_t* slider1;
 static unsigned char dp_download_led_1_handle(const unsigned char value[], unsigned short length)
 {
     //示例:当前DP类型为VALUE
     unsigned char ret;
-    unsigned long led_1;
+   
     
-    led_1 = mcu_get_dp_download_value(value,length);
+    LED1_Light_Value = mcu_get_dp_download_value(value,length);
     /**/
     //VALUE type data processing
-    TIM_SetCompare1(TIM14,led_1);
-    
+    TIM_SetCompare1(TIM9,LED1_Light_Value);
+    lv_slider_set_value(slider1,LED1_Light_Value,LV_ANIM_ON);
     /**/
 
 	
     //There should be a report after processing the DP
-    ret = mcu_dp_value_update(DPID_LED_1,led_1);
+    ret = mcu_dp_value_update(DPID_LED_1,LED1_Light_Value);
     if(ret == SUCCESS)
         return SUCCESS;
     else
@@ -258,6 +271,7 @@ static unsigned char dp_download_led3_handle(const unsigned char value[], unsign
 返回参数 : 成功返回:SUCCESS/失败返回:ERROR
 使用说明 : 可下发可上报类型,需要在处理完数据后上报处理结果至app
 *****************************************************************************/
+extern lv_obj_t* switch1;
 static unsigned char dp_download_switch1_handle(const unsigned char value[], unsigned short length)
 {
     //示例:当前DP类型为BOOL
@@ -266,18 +280,10 @@ static unsigned char dp_download_switch1_handle(const unsigned char value[], uns
     unsigned char switch1;
     
     switch1 = mcu_get_dp_download_bool(value,length);
-    if(switch1 == 0) {
-		
-		TIM_SetCompare1(TIM14,0);
-        //bool off
-    }else {
-        //bool on
-		TIM_SetCompare1(TIM14,255);
-		
-    }
-  
+    LED1_mcu(switch1);
     //There should be a report after processing the DP
     ret = mcu_dp_bool_update(DPID_SWITCH1,switch1);
+    mcu_dp_value_update(DPID_LED_1,switch1 && 255);
     if(ret == SUCCESS)
         return SUCCESS;
     else
@@ -291,20 +297,15 @@ static unsigned char dp_download_switch1_handle(const unsigned char value[], uns
 返回参数 : 成功返回:SUCCESS/失败返回:ERROR
 使用说明 : 可下发可上报类型,需要在处理完数据后上报处理结果至app
 *****************************************************************************/
+extern lv_obj_t* switch2;
 static unsigned char dp_download_switch2_handle(const unsigned char value[], unsigned short length)
 {
     //示例:当前DP类型为BOOL
     unsigned char ret;
     //0:off/1:on
     unsigned char switch2;
-    
     switch2 = mcu_get_dp_download_bool(value,length);
-    if(switch2 == 0) {
-        LED1 = 1;//bool off
-    }else {
-        LED1 = 0;//bool on
-    }
-  
+    LED2_mcu(switch2);
     //There should be a report after processing the DP
     ret = mcu_dp_bool_update(DPID_SWITCH2,switch2);
     if(ret == SUCCESS)

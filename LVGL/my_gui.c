@@ -1,11 +1,12 @@
 #include "my_gui.h"
 #include "lvgl.h"
+#include "wifi.h"
 #include <stdio.h>
 
 
-#if (1 != LV_FONT_MONTSERRAT_10 || 1 != LV_FONT_MONTSERRAT_14 || 1 != LV_FONT_MONTSERRAT_20)
-    #error Please Make Sure Enable LV_FONT_MONTSERRAT_10 & LV_FONT_MONTSERRAT_14 & LV_FONT_MONTSERRAT_20
-#endif
+// #if (1 != LV_FONT_MONTSERRAT_10 || 1 != LV_FONT_MONTSERRAT_14 || 1 != LV_FONT_MONTSERRAT_20)
+//     #error Please Make Sure Enable LV_FONT_MONTSERRAT_10 & LV_FONT_MONTSERRAT_14 & LV_FONT_MONTSERRAT_20
+// #endif
 
 static const lv_font_t* font = &lv_font_montserrat_20;       /* 定义字体 */
 
@@ -16,28 +17,27 @@ LV_IMG_DECLARE(switch_img);         //
 LV_FONT_DECLARE(Font30);                        /* 声明字体 */
 LV_FONT_DECLARE(Font24_Normal);         /* 声明字体 */
 LV_FONT_DECLARE(Font18_Normal);         /* 声明字体 */
-LV_FONT_DECLARE(Font20);                        /* 声明字体 */
 
 
 /*************** 外部变量声明 ********************/
-extern uint8_t DHT11_temp_int;
-extern uint8_t DHT11_temp_flot;
-extern uint8_t DHT11_humi_int;
+
 extern uint16_t SHT30_temp;
 extern uint16_t SHT30_humi;
 extern uint32_t CO2Data;
 extern uint32_t TVOCData;
+extern bool Switch1_State_bool;
+extern bool Switch2_State_bool;
 
 /*************** 变量声明 ********************/
 
 static lv_obj_t *PageView;          /* 全局平铺视图 */
 static lv_obj_t *Page1;             /* 页面1 左 */
 static lv_obj_t *Page2;             /* 页面2 中 */
-static lv_obj_t *Page3;             /* 页面3 右 */
+//static lv_obj_t *Page3;             /* 页面3 右 */
 
 static lv_obj_t* lv_LED1;
 static lv_obj_t* title1;
-static lv_obj_t* slider1;
+lv_obj_t* slider1;
 static lv_obj_t* switch1;
 
 static lv_obj_t* lv_LED2;
@@ -79,12 +79,14 @@ static void CardTable1_switch_event_cb(lv_event_t * e)
 {
     Switch1State = !Switch1State;
     lv_obj_t *target = lv_event_get_current_target(e);      /* 获取触发源 */
-    lv_obj_t *TargetOBJ;
+
     printf("run callback1  fun\r\n");
     if(Switch1State == 1)
     {
         lv_obj_set_style_img_recolor(target,lv_color_hex(0xff0000),LV_STATE_DEFAULT);
         lv_led_on(lv_LED1);
+        Switch1_State_bool = TRUE;
+        mcu_dp_value_update(DPID_LED_1,255);
         TIM_SetCompare1(TIM9,255);
         lv_slider_set_value(slider1,255,LV_ANIM_ON);
     }
@@ -92,35 +94,41 @@ static void CardTable1_switch_event_cb(lv_event_t * e)
     {
         lv_obj_set_style_img_recolor(target,lv_color_hex(0x000000),LV_STATE_DEFAULT);
         lv_led_off(lv_LED1);
+        Switch1_State_bool = FALSE;
+        mcu_dp_value_update(DPID_LED_1,0);
         TIM_SetCompare1(TIM9,0);
         lv_slider_set_value(slider1,0,LV_ANIM_ON);
     }
 
     //lv_obj_set_style_img_recolor(target,lv_color_hex(0xff0000),LV_STATE_DEFAULT);
     lv_obj_set_style_img_recolor_opa(target,200,LV_STATE_DEFAULT);
+    mcu_dp_bool_update(DPID_SWITCH1,Switch1_State_bool);        //上传开关1的状态
     //LED1_TOGGLE();
 }
 static void CardTable2_switch_event_cb(lv_event_t * e)
 {
     Switch2State = !Switch2State;
     lv_obj_t *target = lv_event_get_current_target(e);      /* 获取触发源 */
-    lv_obj_t *TargetOBJ;
+
     printf("run callback2  fun\r\n");
     if(Switch2State == 1)
     {
         lv_obj_set_style_img_recolor(target,lv_color_hex(0xff0000),LV_STATE_DEFAULT);
         lv_led_on(lv_LED2);
+        Switch2_State_bool = TRUE;
         LED1 = 0;                   //低电平亮
     }
     else
     {
         lv_obj_set_style_img_recolor(target,lv_color_hex(0x000000),LV_STATE_DEFAULT);
         lv_led_off(lv_LED2);
+        Switch2_State_bool = FALSE;
         LED1 = 1;
     }
 
     //lv_obj_set_style_img_recolor(target,lv_color_hex(0xff0000),LV_STATE_DEFAULT);
     lv_obj_set_style_img_recolor_opa(target,200,LV_STATE_DEFAULT);
+    mcu_dp_bool_update(DPID_SWITCH2,Switch2_State_bool);
     //lv_obj_set_style_img_recolor(switch1,lv_color_hex(0x000000),LV_STATE_DEFAULT);
     //LED1_TOGGLE();
 }
@@ -128,7 +136,7 @@ static void CardTable3_switch_event_cb(lv_event_t * e)
 {
     Switch3State = !Switch3State;
     lv_obj_t *target = lv_event_get_current_target(e);      /* 获取触发源 */
-    lv_obj_t *TargetOBJ;
+
     printf("run callback3  fun\r\n");
     if(Switch3State == 1)   //打开
     {
@@ -163,6 +171,7 @@ static void CardTable1_slider_event_cb(lv_event_t *e)
         value1 = lv_slider_get_value(target);
         //printf("%d\r\n",value1);
         lv_led_set_brightness(lv_LED1, value1);
+        mcu_dp_value_update(DPID_LED_1,value1);
         TIM_SetCompare1(TIM9,value1);
         if(value1) lv_obj_set_style_img_recolor(switch1,lv_color_hex(0xff0000),LV_STATE_DEFAULT);
         else lv_obj_set_style_img_recolor(switch1,lv_color_hex(0x000000),LV_STATE_DEFAULT);
@@ -424,13 +433,13 @@ static void Page2_Card2Set( lv_obj_t *card )
     /*******************  温湿度值  ***********************/
     Temp_Lable = lv_label_create(card);
     lv_obj_set_style_text_font(Temp_Lable,&Font30,LV_STATE_DEFAULT);
-    lv_label_set_text_fmt(Temp_Lable,"%d.%d",DHT11_temp_int,DHT11_temp_flot);
+    lv_label_set_text_fmt(Temp_Lable,"%d.%d",SHT30_temp/10,SHT30_temp%10);
     //lv_label_set_text(Temp_Lable,DHT11_temp);
     lv_obj_align(Temp_Lable,LV_ALIGN_CENTER,-10,-40);
 
     Humi_Lable = lv_label_create(card);
     lv_obj_set_style_text_font(Humi_Lable,&Font30,LV_STATE_DEFAULT);
-    lv_label_set_text_fmt(Humi_Lable,"%d",DHT11_humi_int);
+    lv_label_set_text_fmt(Humi_Lable,"%d",SHT30_humi);
     //lv_label_set_text(Humi_Lable,DHT11_humi);
     lv_obj_align(Humi_Lable,LV_ALIGN_BOTTOM_MID,-10,-40);
 
@@ -471,6 +480,40 @@ static void CardTable_Set(lv_obj_t* CardTable,lv_obj_t* LED, lv_obj_t* slider,lv
     //lv_obj_add_event_cb(switch_t,CardTable_event_cb,LV_EVENT_RELEASED,NULL);
 }
 
+void LED1_mcu(bool state)
+{
+    if(state)
+    {
+        lv_led_on(lv_LED1);
+        lv_obj_set_style_img_recolor(switch1,lv_color_hex(0xff0000),LV_STATE_DEFAULT);
+        TIM_SetCompare1(TIM9,255);
+        lv_slider_set_value(slider1,255,LV_ANIM_ON);
+    }
+    else
+    {
+        lv_led_off(lv_LED1);
+        lv_obj_set_style_img_recolor(switch1,lv_color_hex(0x000000),LV_STATE_DEFAULT);
+        TIM_SetCompare1(TIM9,0);
+        lv_slider_set_value(slider1,0,LV_ANIM_ON);
+    }
+}
+void LED2_mcu(bool state)
+{
+    if(state)
+    {
+        lv_led_on(lv_LED2);
+        lv_obj_set_style_img_recolor(switch2,lv_color_hex(0xff0000),LV_STATE_DEFAULT);
+        LED1 = 0;
+    }
+    else
+    {
+        lv_led_off(lv_LED2);
+        lv_obj_set_style_img_recolor(switch2,lv_color_hex(0x000000),LV_STATE_DEFAULT);
+        LED1 = 1;
+    }
+}
+
+
 void My_Gui(void)
 {
     Page_Creat();
@@ -496,6 +539,9 @@ void my_timer(lv_timer_t * timer)
 
     lv_label_set_text_fmt(Temp_Lable,"%d.%d",SHT30_temp/10,SHT30_temp%10);
     lv_label_set_text_fmt(Humi_Lable,"%d",SHT30_humi);
+
+    // lv_label_set_text_fmt(Temp_Lable,"%d.%d",26,3);
+    // lv_label_set_text_fmt(Humi_Lable,"%d",47);
 
     lv_label_set_text_fmt(TVOC_Lable,"%d",TVOCData);
     lv_label_set_text_fmt(CO2_Lable,"%d",CO2Data);

@@ -1,3 +1,4 @@
+
 #ifndef _MY_GUI_H
 #define _MY_GUI_H
 
@@ -11,5 +12,7 @@
 
 void My_Gui(void);
 void my_lvgl_init(void);
+void LED1_mcu(bool state);
+void LED2_mcu(bool state);
 
 #endif // _MY_GUI_H
