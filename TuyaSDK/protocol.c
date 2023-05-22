@@ -51,7 +51,7 @@ extern bool Switch2_State_bool;	    //开关2状态
  */
 const char *weather_choose[WEATHER_CHOOSE_CNT] = {
     "temp",
-    "humidity",
+    //"humidity",
     "condition",
     "pm25",
     /*"pressure",
@@ -486,6 +486,7 @@ void mcu_get_greentime(unsigned char time[])
 }
 #endif
 
+extern uint8_t local_time[4];
 #ifdef SUPPORT_MCU_RTC_CHECK
 /**
  * @brief  MCU校对本地RTC时钟
@@ -495,7 +496,7 @@ void mcu_get_greentime(unsigned char time[])
  */
 void mcu_write_rtctime(unsigned char time[])
 {
-    #error "请自行完成RTC时钟写入代码,并删除该行"
+    //#error "请自行完成RTC时钟写入代码,并删除该行"
     /*
     Time[0] 为是否获取时间成功标志，为 0 表示失败，为 1表示成功
     Time[1] 为年份，0x00 表示 2000 年
@@ -508,9 +509,17 @@ void mcu_write_rtctime(unsigned char time[])
    */
     if(time[0] == 1) {
         //正确接收到wifi模块返回的本地时钟数据
-     
+        LED_1 = 0;
+        LED_0 = 1;
+        local_time[0] = time[2];    //月
+        local_time[1] = time[3];    //日
+        local_time[2] = time[4];    //小时
+        local_time[3] = time[5];    //分钟
+        Time_Update(local_time);
     }else {
         //获取本地时钟数据出错,有可能是当前wifi模块未联网
+        LED_1 = 1;
+        LED_0 = 0;
     }
 }
 #endif

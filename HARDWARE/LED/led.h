@@ -17,8 +17,8 @@
 
 
 //LED¶Ë¿Ú¶¨Òå
-// #define LED0 PFout(9)	// DS0
-// #define LED1 PFout(10)	// DS1	 
+#define LED_0 PFout(9)	// DS0
+#define LED_1 PFout(10)	// DS1	 
 #define LED0 PEout(5)	// DS0
 #define LED1 PEout(6)	// DS1	 
 

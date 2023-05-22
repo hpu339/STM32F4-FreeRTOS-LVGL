@@ -1,12 +1,4 @@
 
-/*
- * @Author: Yang Lixin
- * @Date: 2023-04-10 20:04:02
- * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-05-19 20:32:02
- * @Description: 
- */
-
 //#include<stdbool.h>
 #include "sys.h"
 #include "delay.h"
@@ -70,8 +62,7 @@ uint32_t sgp30_dat,CO2Data,TVOCData;//气体数据、CO2、TVOC
 uint8_t LED1_Light_Value;			//LED1灯的亮度
 bool Switch1_State_bool = 0;			//开关1状态
 bool Switch2_State_bool = 0;			//开关2状态
-
-
+uint8_t local_time[4];					//用来存放时间，小时和分钟
 
 
 int main(void)
@@ -172,7 +163,9 @@ void dht11_task(void *pvParameters)
 		mcu_dp_value_update(DPID_CO2_VALUE,CO2Data);
 		// mcu_dp_value_update(DPID_TVOC,24);
 		// mcu_dp_value_update(DPID_CO2_VALUE,445);
-		
+		mcu_get_system_time();
+		//mcu_write_rtctime(local_time);
+		printf("串口测试%d:%d\n",local_time[0],local_time[1]);
 		vTaskDelay(1000);
 	}
 }

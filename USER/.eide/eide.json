@@ -46,10 +46,10 @@
         "name": "FreeRTOS_PORTABLE",
         "files": [
           {
-            "path": "../FreeRTOS/portable/RVDS/ARM_CM4F/port.c"
+            "path": "../FreeRTOS/portable/MemMang/heap_4.c"
           },
           {
-            "path": "../FreeRTOS/portable/MemMang/heap_4.c"
+            "path": "../FreeRTOS/portable/RVDS/ARM_CM4F/port.c"
           }
         ],
         "folders": []
@@ -647,7 +647,11 @@
       },
       {
         "name": "README",
-        "files": [],
+        "files": [
+          {
+            "path": "../README.md"
+          }
+        ],
         "folders": []
       },
       {

@@ -81,8 +81,8 @@ MCU可调用mcu_api.c文件内的mcu_firm_update_query()函数获取当前MCU固
                     如当前使用MCU的RAM不够,可修改为24
 ******************************************************************************/
 #ifndef SUPPORT_MCU_FIRM_UPDATE
-#define WIFI_UART_RECV_BUF_LMT          16              //串口数据接收缓存区大小,如MCU的RAM不够,可缩小
-#define WIFI_DATA_PROCESS_LMT           24              //串口数据处理缓存区大小,根据用户DP数据大小量定,必须大于24
+#define WIFI_UART_RECV_BUF_LMT          20              //串口数据接收缓存区大小,如MCU的RAM不够,可缩小
+#define WIFI_DATA_PROCESS_LMT           26              //串口数据处理缓存区大小,根据用户DP数据大小量定,必须大于24
 #else
 #define WIFI_UART_RECV_BUF_LMT          128             //串口数据接收缓存区大小,如MCU的RAM不够,可缩小
 
@@ -116,7 +116,7 @@ MCU自处理:
 mcu_write_rtctime内部有#err提示,完成函数后请删除该#err
 mcu在wifi模块正确联网后可调用mcu_get_system_time()函数发起校时功能
 ******************************************************************************/
-//#define         SUPPORT_MCU_RTC_CHECK                //开启校时功能
+#define         SUPPORT_MCU_RTC_CHECK                //开启校时功能
 
 /******************************************************************************
                       6:MCU是否需要支持wifi功能测试
