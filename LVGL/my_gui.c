@@ -1,3 +1,9 @@
+/*
+ * @description: 
+ * @event: 
+ * @param: 
+ * @return: 
+ */
 #include "my_gui.h"
 #include "lvgl.h"
 #include "wifi.h"
@@ -57,6 +63,8 @@ static lv_obj_t * Temp_Lable;
 static lv_obj_t * Humi_Lable;
 static lv_obj_t * TVOC_Lable;
 static lv_obj_t * CO2_Lable;
+
+static lv_obj_t *label_left;    //标题栏左边，用来显示时间
 
 static int32_t value1;
 
@@ -286,14 +294,14 @@ static void StateBar_Set(void)
 {
 
     /* 左侧状态栏 */
-    lv_obj_t *label_left = lv_label_create(lv_scr_act());                                   /* 创建标签 */
+    label_left = lv_label_create(lv_scr_act());                                   /* 创建标签 */
     lv_label_set_text(label_left, "AM 8:30" );                                              /* 设置文本内容 */
     lv_obj_set_style_text_font(label_left, font, LV_STATE_DEFAULT);                         /* 设置字体 */
     lv_obj_align(label_left, LV_ALIGN_TOP_LEFT, 10, 10);                                    /* 设置位置 */
 
     /* 右侧状态栏 */
     lv_obj_t *label_right = lv_label_create(lv_scr_act());                                  /* 创建标签 */
-    lv_label_set_text(label_right, LV_SYMBOL_WIFI "   80% " LV_SYMBOL_BATTERY_3);           /* 设置文本内容 */
+    lv_label_set_text(label_right, LV_SYMBOL_WIFI);           /* 设置文本内容 */
     lv_obj_set_style_text_font(label_right, font, LV_STATE_DEFAULT);                        /* 设置字体 */
     lv_obj_align(label_right, LV_ALIGN_TOP_RIGHT, -10, 10);                                 /* 设置位置 */
 }
@@ -403,7 +411,7 @@ static void Page2_Card3Set( lv_obj_t *card )
     /*******************  单位符号  ***********************/
     lv_obj_t * TVOC_Signal = lv_label_create(card);
     lv_obj_set_style_text_font(TVOC_Signal,&Font18_Normal,LV_STATE_DEFAULT);
-    lv_label_set_text(TVOC_Signal,"ppm");
+    lv_label_set_text(TVOC_Signal,"ppb");
     lv_obj_align_to(TVOC_Signal,TVOC_Lable,LV_ALIGN_OUT_RIGHT_MID,7,0);
 
     lv_obj_t * CO2_Signal = lv_label_create(card);
@@ -480,6 +488,11 @@ static void CardTable_Set(lv_obj_t* CardTable,lv_obj_t* LED, lv_obj_t* slider,lv
     //lv_obj_add_event_cb(switch_t,CardTable_event_cb,LV_EVENT_RELEASED,NULL);
 }
 
+/**
+ * @brief   LED1开关状态
+ * @param  @SwitcState
+ * @return
+ */
 void LED1_mcu(bool state)
 {
     if(state)
@@ -497,6 +510,11 @@ void LED1_mcu(bool state)
         lv_slider_set_value(slider1,0,LV_ANIM_ON);
     }
 }
+/**
+ * @brief   LED2开关状态
+ * @param  @SwitcState
+ * @return
+ */
 void LED2_mcu(bool state)
 {
     if(state)
@@ -512,7 +530,16 @@ void LED2_mcu(bool state)
         LED1 = 1;
     }
 }
-
+/**
+ * @brief   更新本地时间
+ * @param  @SwitcState
+ * @return
+ */
+void Time_Update(uint8_t time[])
+{
+    //lv_label_set_text(label_left, "AM 8:30" );  
+    lv_label_set_text_fmt(label_left,"%d.%d  %d:%02d",time[0],time[1],time[2],time[3]);
+}
 
 void My_Gui(void)
 {
