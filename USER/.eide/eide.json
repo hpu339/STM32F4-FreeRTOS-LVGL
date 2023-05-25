@@ -625,6 +625,9 @@
             "path": "../LVGL/lvgl_img/Font30.c"
           },
           {
+            "path": "../LVGL/lvgl_img/hpu_log.c"
+          },
+          {
             "path": "../LVGL/lvgl_img/switch_img.c"
           },
           {

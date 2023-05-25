@@ -19,6 +19,7 @@ static const lv_font_t* font = &lv_font_montserrat_20;       /* 定义字体 */
 /*************** 图片声明 ********************/
 LV_IMG_DECLARE(bg_color);       //page2背景图片
 LV_IMG_DECLARE(switch_img);         //
+LV_IMG_DECLARE(hpu_log);
 
 LV_FONT_DECLARE(Font30);                        /* 声明字体 */
 LV_FONT_DECLARE(Font24_Normal);         /* 声明字体 */
@@ -64,12 +65,18 @@ static lv_obj_t * Humi_Lable;
 static lv_obj_t * TVOC_Lable;
 static lv_obj_t * CO2_Lable;
 
-static lv_obj_t *label_left;    //标题栏左边，用来显示时间
+static lv_obj_t *label_left;        //标题栏左边，用来显示时间
 
-static int32_t value1;
+static int32_t value1;              //LED1灯亮度回调函数
+static lv_obj_t *Init_bar;          //进度条
+static lv_obj_t * percent_label;    //进度条标签
+static lv_obj_t *InitUI;            //初始化界面声明
 
 /*************** 函数声明 ********************/
 static void StateBar_Set(void);             /* 状态栏函数 */
+static void Page_Creat(void);               /* 页面创建函数 */
+static void Page1_Set(void);                /* 页面1设置函数 */
+static void Page2_Set(void);                /* 页面2设置函数 */
 static void Page2_Card1Set( lv_obj_t *card );
 static void Page2_Card2Set( lv_obj_t *card );
 static void Page2_Card3Set( lv_obj_t *card );
@@ -77,7 +84,19 @@ void my_timer(lv_timer_t * timer);
 
 static void CardTable_Set(lv_obj_t* CardTable,lv_obj_t* LED, lv_obj_t* slider,lv_obj_t* switch_t);
 
+/************************************* Page2内部组件相关 ******************************************
 
+
+
+
+
+
+*************************************************************************************************/
+
+            /*************************灯光相关函数**********************************/
+
+
+                                /****开关回调函数****/
 /**
  * @brief  灯开关回调函数
  * @param  *e ：事件相关参数的集合，它包含了该事件的所有数据
@@ -164,7 +183,7 @@ static void CardTable3_switch_event_cb(lv_event_t * e)
     //LED1_TOGGLE();
 }
 
-
+                                /***滑动条回调函数***/
 /**
  * @brief  灯滑动条回调函数
  * @param  *e ：事件相关参数的集合，它包含了该事件的所有数据
@@ -208,104 +227,7 @@ static void CardTable3_slider_event_cb(lv_event_t *e)
 
 }
 
-
-
-/**
- * @brief  页面创建函数
- * @param
- * @return
- */
-static void Page_Creat(void)
-{
-
-    PageView = lv_tileview_create(lv_scr_act());  //创建平铺视图
-    Page1 = lv_tileview_add_tile( PageView, 0, 0,LV_DIR_RIGHT );//最左面的
-    Page2 = lv_tileview_add_tile( PageView, 1, 0,LV_DIR_HOR );//中间的
-    //Page3 = lv_tileview_add_tile( PageView, 2, 0,LV_DIR_LEFT );//最右面的
-
-
-    StateBar_Set();
-    lv_obj_update_layout( PageView ); /* 更新参数 */
-    lv_obj_set_tile( PageView, Page2, LV_ANIM_ON ); //设置页面2为当前页面
-
-    lv_obj_t *img = lv_img_create(Page2);
-    lv_img_set_src(img, &bg_color);
-
-    //lv_obj_set_style_bg_color(PageView, lv_color_hex(0x354e6b),LV_STATE_DEFAULT); /* 设置部件的*/
-    lv_obj_remove_style(PageView, NULL, LV_PART_SCROLLBAR);  /* 移除滚动条 */
-}
-
-/**
- * @brief  页面1内容设置
- * @param
- * @return
- */
-static void Page1_Set(void)
-{
-    lv_obj_t *label_1 = lv_label_create(Page1);                    /* 创建标签 */
-    lv_label_set_text(label_1, "Page_1");                           /* 设置文本内容 */
-    lv_obj_set_style_text_font(label_1, font, LV_STATE_DEFAULT);    /* 设置字体 */
-    lv_obj_center(label_1);                                         /* 设置位置 */
-}
-
-/**
- * @brief  页面2内容设置
- * @param
- * @return
- */
-static void Page2_Set(void)
-{
-//    lv_obj_t *label_1 = lv_label_create(Page2);                    /* 创建标签 */
-//    lv_label_set_text(label_1, "Page_2");                           /* 设置文本内容 */
-//    lv_obj_set_style_text_font(label_1, font, LV_STATE_DEFAULT);    /* 设置字体 */
-//    lv_obj_center(label_1);                                         /* 设置位置 */
-
-    /************** 创建三个card ****************/
-    lv_obj_t *card1 = lv_obj_create(Page2);
-    lv_obj_t *card2 = lv_obj_create(Page2);
-    lv_obj_t *card3 = lv_obj_create(Page2);
-
-    /************** 设置三个card ****************/
-    Page2_Card1Set(card1);
-    Page2_Card2Set(card2);
-    Page2_Card3Set(card3);
-
-}
-
-/**
- * @brief  页面3内容设置
- * @param
- * @return
- */
-static void Page3_Set(void)
-{
-    // lv_obj_t *label_1 = lv_label_create(Page3);                    /* 创建标签 */
-    // lv_label_set_text(label_1, "Page_3");                           /* 设置文本内容 */
-    // lv_obj_set_style_text_font(label_1, font, LV_STATE_DEFAULT);    /* 设置字体 */
-    // lv_obj_center(label_1);                                         /* 设置位置 */
-}
-
-/**
- * @brief  状态栏设置函数
- * @param
- * @return
- */
-static void StateBar_Set(void)
-{
-
-    /* 左侧状态栏 */
-    label_left = lv_label_create(lv_scr_act());                                   /* 创建标签 */
-    lv_label_set_text(label_left, "AM 8:30" );                                              /* 设置文本内容 */
-    lv_obj_set_style_text_font(label_left, font, LV_STATE_DEFAULT);                         /* 设置字体 */
-    lv_obj_align(label_left, LV_ALIGN_TOP_LEFT, 10, 10);                                    /* 设置位置 */
-
-    /* 右侧状态栏 */
-    lv_obj_t *label_right = lv_label_create(lv_scr_act());                                  /* 创建标签 */
-    lv_label_set_text(label_right, LV_SYMBOL_WIFI);           /* 设置文本内容 */
-    lv_obj_set_style_text_font(label_right, font, LV_STATE_DEFAULT);                        /* 设置字体 */
-    lv_obj_align(label_right, LV_ALIGN_TOP_RIGHT, -10, 10);                                 /* 设置位置 */
-}
-
+            /*************************page2 三大卡片布局*******************************/
 /**
  * @brief
  * @param  card对象
@@ -412,7 +334,7 @@ static void Page2_Card3Set( lv_obj_t *card )
     lv_obj_t * TVOC_Signal = lv_label_create(card);
     lv_obj_set_style_text_font(TVOC_Signal,&Font18_Normal,LV_STATE_DEFAULT);
     lv_label_set_text(TVOC_Signal,"ppb");
-    lv_obj_align_to(TVOC_Signal,TVOC_Lable,LV_ALIGN_OUT_RIGHT_MID,7,0);
+    lv_obj_align_to(TVOC_Signal,TVOC_Lable,LV_ALIGN_OUT_RIGHT_MID,20,0);
 
     lv_obj_t * CO2_Signal = lv_label_create(card);
     lv_obj_set_style_text_font(CO2_Signal,&Font18_Normal,LV_STATE_DEFAULT);
@@ -463,8 +385,9 @@ static void Page2_Card2Set( lv_obj_t *card )
     lv_obj_align_to(Humi_Signal,Humi_Lable,LV_ALIGN_OUT_RIGHT_MID,7,4);
 }
 
+            /*************************卡片 Table 布局模板函数 ************************/
 /**
- * @brief
+ * @brief   卡片1 Table 布局模板函数
  * @param  @CardTable;@LED;@slider;@switch_t;
  * @return
  */
@@ -488,6 +411,7 @@ static void CardTable_Set(lv_obj_t* CardTable,lv_obj_t* LED, lv_obj_t* slider,lv
     //lv_obj_add_event_cb(switch_t,CardTable_event_cb,LV_EVENT_RELEASED,NULL);
 }
 
+            /************************* MCU 调用函数 **********************************/
 /**
  * @brief   LED1开关状态
  * @param  @SwitcState
@@ -530,6 +454,237 @@ void LED2_mcu(bool state)
         LED1 = 1;
     }
 }
+
+
+/************************************* 主界面相关组件 ******************************************
+
+
+
+
+
+
+*************************************************************************************************/
+
+
+            /************************ 主界面创建函数 *************************/
+/**
+ * @brief  页面创建函数
+ * @param
+ * @return
+ */
+static void Page_Creat(void)
+{
+
+    PageView = lv_tileview_create(lv_scr_act());  //创建平铺视图
+    Page1 = lv_tileview_add_tile( PageView, 0, 0,LV_DIR_RIGHT );//最左面的
+    Page2 = lv_tileview_add_tile( PageView, 1, 0,LV_DIR_HOR );//中间的
+    //Page3 = lv_tileview_add_tile( PageView, 2, 0,LV_DIR_LEFT );//最右面的
+
+
+    StateBar_Set();
+    lv_obj_update_layout( PageView ); /* 更新参数 */
+    lv_obj_set_tile( PageView, Page2, LV_ANIM_ON ); //设置页面2为当前页面
+
+    lv_obj_t *img = lv_img_create(Page2);
+    lv_img_set_src(img, &bg_color);
+
+    //lv_obj_set_style_bg_color(PageView, lv_color_hex(0x354e6b),LV_STATE_DEFAULT); /* 设置部件的*/
+    lv_obj_remove_style(PageView, NULL, LV_PART_SCROLLBAR);  /* 移除滚动条 */
+
+    Page1_Set();
+    Page2_Set();
+
+    lv_timer_create(my_timer,500,NULL);
+}
+
+            /************************ 三个界面设置API *************************/
+/**
+ * @brief  页面1内容设置
+ * @param
+ * @return
+ */
+static void Page1_Set(void)
+{
+     lv_obj_set_style_bg_color(Page1,lv_color_hex(0xffffff),LV_STATE_DEFAULT);
+}
+
+/**
+ * @brief  页面2内容设置
+ * @param
+ * @return
+ */
+static void Page2_Set(void)
+{
+//    lv_obj_t *label_1 = lv_label_create(Page2);                    /* 创建标签 */
+//    lv_label_set_text(label_1, "Page_2");                           /* 设置文本内容 */
+//    lv_obj_set_style_text_font(label_1, font, LV_STATE_DEFAULT);    /* 设置字体 */
+//    lv_obj_center(label_1);                                         /* 设置位置 */
+
+    /************** 创建三个card ****************/
+    lv_obj_t *card1 = lv_obj_create(Page2);
+    lv_obj_t *card2 = lv_obj_create(Page2);
+    lv_obj_t *card3 = lv_obj_create(Page2);
+
+    /************** 设置三个card ****************/
+    Page2_Card1Set(card1);
+    Page2_Card2Set(card2);
+    Page2_Card3Set(card3);
+
+}
+
+
+
+            /************************ 状态栏设置API *************************/
+/**
+ * @brief  状态栏设置函数
+ * @param
+ * @return
+ */
+static void StateBar_Set(void)
+{
+
+    /* 左侧状态栏 */
+    label_left = lv_label_create(lv_scr_act());                                   /* 创建标签 */
+    lv_label_set_text(label_left, "AM 8:30" );                                              /* 设置文本内容 */
+    //lv_label_set_text_fmt(label_left,"2023-%d-%d  %d:%02d",time[0],time[1],time[2],time[3])
+    lv_obj_set_style_text_font(label_left, font, LV_STATE_DEFAULT);                         /* 设置字体 */
+    lv_obj_align(label_left, LV_ALIGN_TOP_LEFT, 10, 10);                                    /* 设置位置 */
+
+    /* 右侧状态栏 */
+    lv_obj_t *label_right = lv_label_create(lv_scr_act());                                  /* 创建标签 */
+    lv_label_set_text(label_right, LV_SYMBOL_WIFI);           /* 设置文本内容 */
+    lv_obj_set_style_text_font(label_right, font, LV_STATE_DEFAULT);                        /* 设置字体 */
+    lv_obj_align(label_right, LV_ALIGN_TOP_RIGHT, -10, 10);                                 /* 设置位置 */
+}
+
+
+/************************************* 初始化界面相关部件 ******************************************
+
+
+
+
+
+
+*************************************************************************************************/
+            /************************ 百分比加载回调函数 *************************/
+/**
+ * @brief  百分比加载回调函数
+ * @param  *e ：事件相关参数的集合，它包含了该事件的所有数据
+ * @return 无
+ */
+static void percent_cb(lv_timer_t* timer)
+{
+    static uint8_t temp_value = 0;
+
+    if(temp_value< 100)
+    {
+       temp_value++;
+       lv_bar_set_value(Init_bar,temp_value,LV_ANIM_ON);
+        lv_label_set_text_fmt(percent_label,"%d %%", lv_bar_get_value(Init_bar));
+    }
+    else{
+
+        lv_label_set_text_fmt(percent_label,"finsh", lv_bar_get_value(Init_bar));
+        lv_timer_del(timer);
+        lv_obj_del(InitUI);
+
+        Page_Creat();
+    }
+}
+
+            /************************ 初始化界面创建函数 *************************/
+static void InitPage_Creat()
+{
+    InitUI = lv_obj_create(lv_scr_act());
+
+    lv_obj_set_size(InitUI,800,480);
+    lv_obj_set_style_bg_color(InitUI,lv_color_black(),LV_STATE_DEFAULT);
+
+    /***************************** 进度条相关 ********************************/
+
+    /*初始化进度条*/
+    Init_bar = lv_bar_create (InitUI);
+    lv_bar_set_range(Init_bar, 0, 100);
+    lv_obj_set_size(Init_bar,300,15);
+    lv_obj_align(Init_bar, LV_ALIGN_CENTER,0,-60);
+    lv_obj_set_style_anim_time(Init_bar,3000,LV_STATE_DEFAULT);
+    lv_bar_set_value(Init_bar, 100, LV_ANIM_ON);
+ //   lv_obj_set_style_opa(Init_bar,50,LV_STATE_DEFAULT);
+
+    /* 百分比标签*/
+    percent_label = lv_label_create(InitUI);
+    lv_obj_align_to(percent_label,Init_bar,LV_ALIGN_OUT_RIGHT_TOP,20,-3);
+    lv_label_set_text(percent_label,"0%");
+
+    lv_obj_set_style_text_color(percent_label,lv_color_white(),LV_STATE_DEFAULT);
+    lv_timer_create(percent_cb,30,NULL);          /* 百分比加载定时回调函数*/
+
+    /******************************* 进程相关 ********************************/
+    /*进程框*/
+    lv_obj_t * box = lv_obj_create(InitUI);
+    lv_obj_set_size(box,300,200);
+    lv_obj_align(box,LV_ALIGN_CENTER,0,100);
+    lv_obj_set_style_bg_color(box,lv_color_black(),LV_STATE_DEFAULT);
+
+    /*加载进程*/
+    lv_obj_t * SH_Label = lv_label_create(box);
+    lv_obj_t * SG_Label = lv_label_create(box);
+    lv_obj_t * WIFI_Label = lv_label_create(box);
+    lv_obj_t * TIME_Label = lv_label_create(box);
+
+    /*设置位置*/
+    lv_obj_align(SH_Label,LV_ALIGN_TOP_LEFT,0,0);
+    lv_obj_align_to(SG_Label,SH_Label,LV_ALIGN_OUT_BOTTOM_LEFT,0,10);
+    lv_obj_align_to(WIFI_Label,SG_Label,LV_ALIGN_OUT_BOTTOM_LEFT,0,10);
+    lv_obj_align_to(TIME_Label,WIFI_Label,LV_ALIGN_OUT_BOTTOM_LEFT,0,10);
+
+    /*设置文本*/
+    lv_label_set_text(SH_Label, "SHT30  OK");                           /* 设置文本内容 */
+    lv_label_set_text(SG_Label, "SGP30  OK");                           /* 设置文本内容 */
+    lv_label_set_text(WIFI_Label, "WIFI  Connecting ");                           /* 设置文本内容 */
+    lv_label_set_text(TIME_Label, "Time   OK ");                           /* 设置文本内容 */
+   // lv_obj_set_style_text_font(SH_Label, font, LV_STATE_DEFAULT);    /* 设置字体 */
+    lv_obj_set_style_text_color(SH_Label,lv_color_white(),LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(SG_Label,lv_color_white(),LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(WIFI_Label,lv_color_white(),LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(TIME_Label,lv_color_white(),LV_STATE_DEFAULT);
+
+    /*设置动画*/
+
+    lv_anim_t a1,a2,a3,a4;
+    lv_anim_timeline_t* anim_TimeLine = lv_anim_timeline_create();      /*动画时间线*/
+
+    lv_anim_init(&a1);
+    lv_anim_init(&a2);
+    lv_anim_init(&a3);
+    lv_anim_init(&a4);
+
+    /*绑定标签*/
+    a1.var = SH_Label;
+    a2.var = SG_Label;
+    a3.var = WIFI_Label;
+    a4.var = TIME_Label;
+
+    /* 动画操作*/
+    a1.exec_cb = a2.exec_cb = a3.exec_cb = a4.exec_cb = (lv_anim_exec_xcb_t)lv_obj_set_height;
+    /*持续时间*/
+    a1.time = a2.time = 500;
+    a3.time = a4.time = 1000;
+    /*开始和结束的值*/
+    a1.start_value =  a2.start_value =  a3.start_value =   a4.start_value = 0;
+    a1.end_value =  a2.end_value =  a3.end_value =  a4.end_value = 20;
+
+    lv_anim_timeline_add(anim_TimeLine,100,&a1);              /*a1 最先*/
+    lv_anim_timeline_add(anim_TimeLine,600,&a2);              /*a1 最先*/
+    lv_anim_timeline_add(anim_TimeLine,1200,&a3);              /*a1 最先*/
+    lv_anim_timeline_add(anim_TimeLine,2300,&a4);              /*a1 最先*/
+
+    lv_anim_timeline_start(anim_TimeLine);
+
+}
+
+
+
 /**
  * @brief   更新本地时间
  * @param  @SwitcState
@@ -538,18 +693,17 @@ void LED2_mcu(bool state)
 void Time_Update(uint8_t time[])
 {
     //lv_label_set_text(label_left, "AM 8:30" );  
-    lv_label_set_text_fmt(label_left,"%d.%d  %d:%02d",time[0],time[1],time[2],time[3]);
+    lv_label_set_text_fmt(label_left,"2023-%d-%d  %d:%02d",time[0],time[1],time[2],time[3]);
 }
 
 void My_Gui(void)
 {
-    Page_Creat();
-    Page1_Set();
-    Page2_Set();
-    Page3_Set();
 
-    lv_timer_t * timer = lv_timer_create(my_timer,500,NULL);
+    InitPage_Creat();
+    // Page_Creat();
 }
+
+
 
 void my_lvgl_init(void)
 {
