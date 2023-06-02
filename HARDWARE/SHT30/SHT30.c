@@ -228,5 +228,3 @@ void SHT30_read_result(u8 addr,u16 *temp,u16 *humi)
 	hum=0;
 	tem=0;
 }
-
-

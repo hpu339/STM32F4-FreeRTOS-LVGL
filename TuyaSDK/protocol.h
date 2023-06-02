@@ -81,8 +81,8 @@ MCU可调用mcu_api.c文件内的mcu_firm_update_query()函数获取当前MCU固
                     如当前使用MCU的RAM不够,可修改为24
 ******************************************************************************/
 #ifndef SUPPORT_MCU_FIRM_UPDATE
-#define WIFI_UART_RECV_BUF_LMT          20              //串口数据接收缓存区大小,如MCU的RAM不够,可缩小
-#define WIFI_DATA_PROCESS_LMT           26              //串口数据处理缓存区大小,根据用户DP数据大小量定,必须大于24
+#define WIFI_UART_RECV_BUF_LMT          26              //串口数据接收缓存区大小,如MCU的RAM不够,可缩小
+#define WIFI_DATA_PROCESS_LMT           28              //串口数据处理缓存区大小,根据用户DP数据大小量定,必须大于24
 #else
 #define WIFI_UART_RECV_BUF_LMT          128             //串口数据接收缓存区大小,如MCU的RAM不够,可缩小
 
@@ -132,10 +132,10 @@ wifi_test_result内部有#err提示,完成函数后请删除该#err
 此两函数内#err提示,完成函数后请删除该#err
 开启天气功能，串口数据缓存区的大小要开大一些
 ******************************************************************************/
-//#define         WEATHER_ENABLE                  //打开天气功能
+#define         WEATHER_ENABLE                  //打开天气功能
 #ifdef          WEATHER_ENABLE
 /*  在protocol.c文件中weather_choose数组中可调整，然后将打开服务的类型数目写到此宏定义  */
-#define         WEATHER_CHOOSE_CNT              4   //选择的需要天气服务类型的数目
+#define         WEATHER_CHOOSE_CNT              2   //选择的需要天气服务类型的数目
 /*  在打开天气服务时，可以设置此宏定义选择天气预报的天数，1表示当天天气(不需要预报可设置为1)，最多为7天(不可以设置成0或大于7)  */
 #define         WEATHER_FORECAST_DAYS_NUM       1   //设置天气预报的天数
 #endif
@@ -170,7 +170,7 @@ wifi_connect_test_result内部有#err提示,完成函数后请删除该#err
 并在protocol.c文件wifi_test_result函数内查看结果,
 wifi_test_result内部有#err提示,完成函数后请删除该#err
 ******************************************************************************/
-//#define         GET_WIFI_STATUS_ENABLE                  //开启获取当前WIFI联网状态功能
+#define         GET_WIFI_STATUS_ENABLE                  //开启获取当前WIFI联网状态功能
 
 /******************************************************************************
                       12:MCU是否需要开启获取模块mac地址功能
@@ -243,7 +243,7 @@ get_voice_state/set_voice_MIC_silence/set_speaker_voice/voice_test/voice_awaken_
 并在protocol.c文件open_module_time_serve_result函数内查看结果,
 open_module_time_serve_result内部有#err提示,完成函数后请删除该#err
 ******************************************************************************/
-//#define         MODULE_EXPANDING_SERVICE_ENABLE        //开启模块拓展服务功能
+#define         MODULE_EXPANDING_SERVICE_ENABLE        //开启模块拓展服务功能
 
 /******************************************************************************
                       20:MCU是否需要支持蓝牙相关功能

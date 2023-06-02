@@ -15,5 +15,6 @@ void my_lvgl_init(void);
 void LED1_mcu(bool state);
 void LED2_mcu(bool state);
 void Time_Update(uint8_t time[]);
+void Wifi_StateUpdate(uint8_t wifi_state);
 
 #endif // _MY_GUI_H

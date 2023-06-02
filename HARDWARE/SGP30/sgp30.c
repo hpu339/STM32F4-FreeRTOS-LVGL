@@ -206,7 +206,3 @@ u32 SGP30_Read(void)
   SGP30_IIC_Stop();
   return(dat);
 }
-
-
-
-

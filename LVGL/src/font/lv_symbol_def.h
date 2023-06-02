@@ -31,6 +31,33 @@ extern "C" {
  * If they are not predefined, they will use the following values
  */
 
+#if !defined LV_SYMBOL_WEATHER_SUNNY
+#define LV_SYMBOL_WEATHER_SUNNY           "\xEE\x98\x99" /*61441, 0xF001*/       //晴天
+#endif
+
+#if !defined LV_SYMBOL_WEATHER_OVERCAST
+#define LV_SYMBOL_WEATHER_OVERCAST           "\xEE\x98\xAB" /*61441, 0xF001*/       //晴天
+#endif
+
+#if !defined LV_SYMBOL_WEATHER_RAIN_SHORT
+#define LV_SYMBOL_WEATHER_RAIN_SHORT           "\xEE\x9A\x84" /*61441, 0xF001*/       //阵雨
+#endif
+
+#if !defined LV_SYMBOL_WEATHER_CLOUDY
+#define LV_SYMBOL_WEATHER_CLOUDY           "\xEE\x9A\x88" /*61441, 0xF001*/       //多云
+#endif
+
+#if !defined LV_SYMBOL_WEATHER_RAIN_SMALL
+#define LV_SYMBOL_WEATHER_RAIN_SMALL           "\xEE\x9A\x8D" /*61441, 0xF001*/       //小雨
+#endif
+
+#if !defined LV_SYMBOL_WEATHER_RAIN_SMALL_SHORT
+#define LV_SYMBOL_WEATHER_RAIN_SMALL_SHORT           "\xEE\x9A\x8E" /*61441, 0xF001*/       //小雨转中雨
+#endif
+
+#if !defined LV_SYMBOL_WEATHER_RAIN_MIDDLE
+#define LV_SYMBOL_WEATHER_RAIN_MIDDLE           "\xEE\x9A\x82" /*61441, 0xF001*/       //中雨
+#endif
 
 #if !defined LV_SYMBOL_AUDIO
 #define LV_SYMBOL_AUDIO           "\xEF\x80\x81" /*61441, 0xF001*/
@@ -222,6 +249,10 @@ extern "C" {
 
 #if !defined LV_SYMBOL_WIFI
 #define LV_SYMBOL_WIFI            "\xEF\x87\xAB" /*61931, 0xF1EB*/
+#endif
+
+#if !defined LV_SYMBOL_WIFI_OFF
+#define LV_SYMBOL_WIFI_OFF            "\xEE\x9A\x8C" /*61931, 0xF1EB*/  //WIFI断开
 #endif
 
 #if !defined LV_SYMBOL_BATTERY_FULL

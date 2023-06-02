@@ -264,9 +264,11 @@ static void weather_data_raw_handle(const unsigned char p_data[], unsigned short
     
     if(p_data[0] != 1 || data_len < 1) {
         //接收失败
+        printf("weather data receive err\n");
     }else {
         if(data_len < 4) {
             //数据为空
+            printf("weather data NULL\n");
         }
         
         while (i < data_len) {
@@ -285,6 +287,7 @@ static void weather_data_raw_handle(const unsigned char p_data[], unsigned short
             my_memset(value_string, '\0', 100);
             val_cnt = i + 1 + can_len + 1;
             val_len = p_data[val_cnt];
+            printf("run handle\n");
             if (type1 == 0) { //int32
                 weather_data_user_handle(can+2, type1, p_data+val_cnt+1, day);
             }
@@ -564,11 +567,13 @@ void data_handle(unsigned short offset)
 #ifdef WEATHER_ENABLE
         case WEATHER_OPEN_CMD:                                  //打开天气服务返回
             weather_open_return_handle(wifi_data_process_buf[offset + DATA_START], wifi_data_process_buf[offset + DATA_START + 1]);
+            printf("weather open return handle\n");        
         break;
     
         case WEATHER_DATA_CMD:                                  //天气数据下发
             total_len = (wifi_data_process_buf[offset + LENGTH_HIGH] << 8) | wifi_data_process_buf[offset + LENGTH_LOW];
             weather_data_raw_handle((unsigned char *)wifi_data_process_buf + offset + DATA_START, total_len);
+            printf("weather data raw handle system.c\n"); 
         break;
 #endif
 

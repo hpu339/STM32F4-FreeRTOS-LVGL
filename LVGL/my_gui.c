@@ -1,3 +1,4 @@
+ 
 /*
  * @description: 
  * @event: 
@@ -66,6 +67,8 @@ static lv_obj_t * TVOC_Lable;
 static lv_obj_t * CO2_Lable;
 
 static lv_obj_t *label_left;        //标题栏左边，用来显示时间
+static lv_obj_t *label_middle;
+static lv_obj_t *label_right;
 
 static int32_t value1;              //LED1灯亮度回调函数
 static lv_obj_t *Init_bar;          //进度条
@@ -476,8 +479,8 @@ static void Page_Creat(void)
 {
 
     PageView = lv_tileview_create(lv_scr_act());  //创建平铺视图
-    Page1 = lv_tileview_add_tile( PageView, 0, 0,LV_DIR_RIGHT );//最左面的
-    Page2 = lv_tileview_add_tile( PageView, 1, 0,LV_DIR_HOR );//中间的
+    //Page1 = lv_tileview_add_tile( PageView, 0, 0,LV_DIR_RIGHT );//最左面的
+    Page2 = lv_tileview_add_tile( PageView, 0, 0,LV_DIR_RIGHT );//中间的
     //Page3 = lv_tileview_add_tile( PageView, 2, 0,LV_DIR_LEFT );//最右面的
 
 
@@ -491,7 +494,7 @@ static void Page_Creat(void)
     //lv_obj_set_style_bg_color(PageView, lv_color_hex(0x354e6b),LV_STATE_DEFAULT); /* 设置部件的*/
     lv_obj_remove_style(PageView, NULL, LV_PART_SCROLLBAR);  /* 移除滚动条 */
 
-    Page1_Set();
+    //Page1_Set();
     Page2_Set();
 
     lv_timer_create(my_timer,500,NULL);
@@ -550,10 +553,16 @@ static void StateBar_Set(void)
     lv_obj_set_style_text_font(label_left, font, LV_STATE_DEFAULT);                         /* 设置字体 */
     lv_obj_align(label_left, LV_ALIGN_TOP_LEFT, 10, 10);                                    /* 设置位置 */
 
+    /* 中间状态栏 */
+    label_middle = lv_label_create(lv_scr_act());                                   /* 创建标签 */
+    lv_obj_set_style_text_font(label_middle, &Font18_Normal, LV_STATE_DEFAULT);                         /* 设置字体 */
+    lv_label_set_text(label_middle, "T:26 C  Weather: "LV_SYMBOL_WEATHER_RAIN_SHORT );  /* 设置文本内容 */
+    lv_obj_align(label_middle, LV_ALIGN_TOP_MID, 10, 10);                                    /* 设置位置 */
+
     /* 右侧状态栏 */
-    lv_obj_t *label_right = lv_label_create(lv_scr_act());                                  /* 创建标签 */
-    lv_label_set_text(label_right, LV_SYMBOL_WIFI);           /* 设置文本内容 */
-    lv_obj_set_style_text_font(label_right, font, LV_STATE_DEFAULT);                        /* 设置字体 */
+    label_right = lv_label_create(lv_scr_act());                                  /* 创建标签 */
+    lv_obj_set_style_text_font(label_right, font, LV_STATE_DEFAULT);  
+    lv_label_set_text(label_right, LV_SYMBOL_WIFI);           /* 设置文本内容 */                      /* 设置字体 */
     lv_obj_align(label_right, LV_ALIGN_TOP_RIGHT, -10, 10);                                 /* 设置位置 */
 }
 
@@ -694,6 +703,32 @@ void Time_Update(uint8_t time[])
 {
     //lv_label_set_text(label_left, "AM 8:30" );  
     lv_label_set_text_fmt(label_left,"2023-%d-%d  %d:%02d",time[0],time[1],time[2],time[3]);
+}
+
+void Wifi_StateUpdate(uint8_t wifi_state)
+{
+
+    switch(wifi_state)
+    {
+        case 4:             //wifi ok    cloud  ok
+            lv_label_set_text_fmt(label_right,LV_SYMBOL_WIFI);
+            //lv_obj_set_style_text_font(label_right, font, LV_STATE_DEFAULT);
+        break;
+
+        case 2:             //已配置，未连上wifi
+            lv_label_set_text_fmt(label_right,LV_SYMBOL_WIFI_OFF);
+            //lv_obj_set_style_text_font(label_right, &Font18_Normal, LV_STATE_DEFAULT);
+        break;
+
+        case 3:             //wifi ok    cloud err
+            lv_label_set_text_fmt(label_right,LV_SYMBOL_WARNING);
+            //lv_obj_set_style_text_font(label_right, font, LV_STATE_DEFAULT);
+        break;
+        default:
+            break;
+        
+    }
+
 }
 
 void My_Gui(void)
