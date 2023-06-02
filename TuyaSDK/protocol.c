@@ -52,7 +52,7 @@ extern bool Switch2_State_bool;	    //开关2状态
 const char *weather_choose[WEATHER_CHOOSE_CNT] = {
     "temp",
     //"humidity",
-    "condition",
+    //"condition",
     "pm25",
     /*"pressure",
     "realFeel",
@@ -161,7 +161,7 @@ void all_data_update(void)
     mcu_dp_value_update(DPID_HUMIDITY_VALUE,89); //VALUE型数据上报;	当前湿度
     mcu_dp_value_update(DPID_CO2_VALUE,450); //VALUE型数据上报;
     mcu_dp_value_update(DPID_TVOC,0); //VALUE型数据上报;
-    mcu_dp_value_update(DPID_LED_1,0); //VALUE型数据上报;		当前灯1
+    mcu_dp_value_update(DPID_LED_1,0); //VALUE型数据上报;		    当前灯1
     mcu_dp_value_update(DPID_LED2,0); //VALUE型数据上报;			当前灯2
     mcu_dp_value_update(DPID_LED3,0); //VALUE型数据上报;			当前灯3
     mcu_dp_bool_update(DPID_SWITCH1,Switch1_State_bool); //BOOL型数据上报;			当前开关1
@@ -487,6 +487,7 @@ void mcu_get_greentime(unsigned char time[])
 #endif
 
 extern uint8_t local_time[4];
+extern bool time_receive_success_flag;
 #ifdef SUPPORT_MCU_RTC_CHECK
 /**
  * @brief  MCU校对本地RTC时钟
@@ -507,19 +508,23 @@ void mcu_write_rtctime(unsigned char time[])
     Time[6] 为秒钟，从 0 开始到59 结束
     Time[7] 为星期，从 1 开始到 7 结束，1代表星期一
    */
+    //LED_1 = 0;
+    printf("receive Time: ");
     if(time[0] == 1) {
         //正确接收到wifi模块返回的本地时钟数据
-        LED_1 = 0;
-        LED_0 = 1;
+         LED_1 = ~LED_1;
+        // LED_0 = 1;
+        time_receive_success_flag = 1;
         local_time[0] = time[2];    //月
         local_time[1] = time[3];    //日
         local_time[2] = time[4];    //小时
         local_time[3] = time[5];    //分钟
         Time_Update(local_time);
+        printf("%d\n",time[5]);
     }else {
         //获取本地时钟数据出错,有可能是当前wifi模块未联网
-        LED_1 = 1;
-        LED_0 = 0;
+         LED_1 = 0;
+        // LED_0 = 0;
     }
 }
 #endif
@@ -546,6 +551,7 @@ void wifi_test_result(unsigned char result,unsigned char rssi)
         }
     }else {
         //测试成功
+        //Wifi_StateUpdate();
         //rssi为信号强度(0-100, 0信号最差，100信号最强)
     }
 }
@@ -571,13 +577,14 @@ void mcu_open_weather(void)
         send_len = set_wifi_uart_buffer(send_len, (unsigned char *)buffer, buffer[0]+1);
     }
     
-    #error "请根据提示，自行完善打开天气服务代码，完成后请删除该行"
+    //#error "请根据提示，自行完善打开天气服务代码，完成后请删除该行"
     /*
     //当获取的参数有和时间有关的参数时(如:日出日落)，需要搭配t.unix或者t.local使用，需要获取的参数数据是按照格林时间还是本地时间
     buffer[0] = sprintf(buffer+1,"t.unix"); //格林时间   或使用  buffer[0] = sprintf(buffer+1,"t.local"); //本地时间
     send_len = set_wifi_uart_buffer(send_len, (unsigned char *)buffer, buffer[0]+1);
     */
     
+    printf("run weather open \n");
     buffer[0] = sprintf(buffer+1,"w.date.%d",WEATHER_FORECAST_DAYS_NUM);
     send_len = set_wifi_uart_buffer(send_len, (unsigned char *)buffer, buffer[0]+1);
     
@@ -595,14 +602,19 @@ void mcu_open_weather(void)
  */
 void weather_open_return_handle(unsigned char res, unsigned char err)
 {
-    #error "请自行完成打开天气功能返回数据处理代码,完成后请删除该行"
+    //#error "请自行完成打开天气功能返回数据处理代码,完成后请删除该行"
     unsigned char err_num = 0;
     
     if(res == 1) {
         //打开天气返回成功
+        // LED_0  = 0;
+        // LED_1 = 0;
+        // LED1 = 1;
+        printf("open weather ok\n");
     }else if(res == 0) {
         //打开天气返回失败
         //获取错误码
+        printf("open weather err\n");
         err_num = err; 
     }
 }
@@ -622,7 +634,7 @@ void weather_open_return_handle(unsigned char res, unsigned char err)
  */
 void weather_data_user_handle(char *name, unsigned char type, const unsigned char *data, char day)
 {
-    #error "这里仅给出示例，请自行完善天气数据处理代码,完成后请删除该行"
+    //#error "这里仅给出示例，请自行完善天气数据处理代码,完成后请删除该行"
     int value_int;
     char value_string[50];//由于有的参数内容较多，这里默认为50。您可以根据定义的参数，可以适当减少该值
     
@@ -635,15 +647,19 @@ void weather_data_user_handle(char *name, unsigned char type, const unsigned cha
         my_strcpy(value_string, data);
     }
     
+    LED_0  = 0;
+    LED_1 = 0;
+    printf("enter weather_data_user_handle\n");
+
     //注意要根据所选参数类型来获得参数值！！！
     if(my_strcmp(name, "temp") == 0) {
         printf("day:%d temp value is:%d\r\n", day, value_int);          //int 型
-    }else if(my_strcmp(name, "humidity") == 0) {
-        printf("day:%d humidity value is:%d\r\n", day, value_int);      //int 型
-    }else if(my_strcmp(name, "pm25") == 0) {
-        printf("day:%d pm25 value is:%d\r\n", day, value_int);          //int 型
-    }else if(my_strcmp(name, "condition") == 0) {
-        printf("day:%d condition value is:%s\r\n", day, value_string);  //string 型
+    // }else if(my_strcmp(name, "humidity") == 0) {
+    //     printf("day:%d humidity value is:%d\r\n", day, value_int);      //int 型
+     }else if(my_strcmp(name, "pm25") == 0) {
+         printf("day:%d pm25 value is:%d\r\n", day, value_int);          //int 型
+    //}else if(my_strcmp(name, "condition") == 0) {
+       // printf("day:%d condition value is:%s\r\n", day, value_string);  //string 型
     }
 }
 #endif
@@ -685,7 +701,7 @@ void get_upload_syn_result(unsigned char result)
  */
 void get_wifi_status(unsigned char result)
 {
-  #error "请自行完成获取 WIFI 状态结果代码,并删除该行"
+  //#error "请自行完成获取 WIFI 状态结果代码,并删除该行"
  
     switch(result) {
         case 0:
@@ -698,14 +714,17 @@ void get_wifi_status(unsigned char result)
         
         case 2:
             //wifi工作状态3
+            Wifi_StateUpdate(result);
         break;
         
         case 3:
             //wifi工作状态4
+            Wifi_StateUpdate(result);
         break;
         
         case 4:
             //wifi工作状态5
+            Wifi_StateUpdate(result);
         break;
         
         case 5:
@@ -942,7 +961,7 @@ unsigned char file_download_handle(const unsigned char value[],unsigned long pos
  */
 void open_module_time_serve_result(const unsigned char value[], unsigned short length)
 {
-    #error "请自行实现模块时间服务通知结果代码,完成后请删除该行"
+    //#error "请自行实现模块时间服务通知结果代码,完成后请删除该行"
     unsigned char sub_cmd = value[0];
     
     switch(sub_cmd) {
@@ -996,6 +1015,7 @@ void open_module_time_serve_result(const unsigned char value[], unsigned short l
             
             if(value[1] == 0) {
                 //成功
+                printf("weather request succefful\n");
             }else {
                 //失败
             }
