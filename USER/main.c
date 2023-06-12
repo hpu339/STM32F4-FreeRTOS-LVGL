@@ -14,6 +14,7 @@
 #include "timer.h"
 #include "lcd.h"
 #include "key.h"
+#include "exti.h"
 #include "string.h"
 #include "malloc.h"
 #include "FreeRTOS.h"
@@ -94,6 +95,7 @@ int main(void)
 	LED_Init();		        			//初始化LED端口
 	KEY_Init();							//初始化按键
 	LCD_Init();							//初始化LCD
+	EXTIX_Init();
 	SHT30_Init();
 	SGP30_Init();
 
@@ -216,3 +218,27 @@ void WifiReloadCallback(TimerHandle_t xTimer)
 	//LED_1 = ~LED_1;
 	printf("wifi_task\n");
 }		
+
+//外部中断4服务程序
+void EXTI4_IRQHandler(void)
+{
+	BaseType_t YieldRequired;
+	
+	delay_xms(10);	//消抖
+	if(KEY0==0)	 
+	{				 
+		// YieldRequired=xTaskResumeFromISR(Task2Task_Handler);//恢复任务2
+		// printf("恢复任务2的运行!\r\n");
+		// if(YieldRequired==pdTRUE)
+		// {
+		// 	/*如果函数xTaskResumeFromISR()返回值为pdTRUE，那么说明要恢复的这个
+		// 	任务的任务优先级等于或者高于正在运行的任务(被中断打断的任务),所以在
+		// 	退出中断的时候一定要进行上下文切换！*/
+		// 	portYIELD_FROM_ISR(YieldRequired);
+		// }
+		mcu_reset_wifi();
+		LED_0 = ~LED_0;
+	}		 
+	EXTI_ClearITPendingBit(EXTI_Line4);//清除LINE4上的中断标志位  
+	delay_xms(10);
+}

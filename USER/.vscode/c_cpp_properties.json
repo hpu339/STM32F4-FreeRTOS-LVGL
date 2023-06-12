@@ -28,6 +28,8 @@
                 "e:\\stm32\\STM32F4-FreeRTOS-LVGL\\HARDWARE\\DHT11",
                 "e:\\stm32\\STM32F4-FreeRTOS-LVGL\\HARDWARE\\SGP30",
                 "e:\\stm32\\STM32F4-FreeRTOS-LVGL\\HARDWARE\\SHT30",
+                "e:\\stm32\\STM32F4-FreeRTOS-LVGL\\HARDWARE\\EXTI",
+                "e:\\stm32\\STM32F4-FreeRTOS-LVGL",
                 "e:\\stm32\\STM32F4-FreeRTOS-LVGL\\LVGL\\lvgl_img",
                 "e:\\stm32\\STM32F4-FreeRTOS-LVGL\\LVGL\\src\\core",
                 "e:\\stm32\\STM32F4-FreeRTOS-LVGL\\LVGL\\src\\draw\\arm2d",

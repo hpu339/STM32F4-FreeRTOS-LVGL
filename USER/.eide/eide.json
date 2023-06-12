@@ -61,6 +61,9 @@
             "path": "../FWLIB/src/misc.c"
           },
           {
+            "path": "../FWLIB/src/stm32f4xx_exti.c"
+          },
+          {
             "path": "../FWLIB/src/stm32f4xx_fsmc.c"
           },
           {
@@ -86,6 +89,9 @@
         "files": [
           {
             "path": "../HARDWARE/DHT11/dht11.c"
+          },
+          {
+            "path": "../HARDWARE/EXTI/exti.c"
           },
           {
             "path": "../HARDWARE/KEY/key.c"
@@ -920,7 +926,8 @@
           "../HARDWARE/PWM",
           "../HARDWARE/DHT11",
           "../HARDWARE/SGP30",
-          "../HARDWARE/SHT30"
+          "../HARDWARE/SHT30",
+          "../HARDWARE/EXTI"
         ],
         "libList": [],
         "sourceDirList": [],
