@@ -1,9 +1,22 @@
-<!--
- * @description: 
- * @event: 
- * @param: 
- * @return: 
--->
+# 工程介绍
+基于FreeRTOS的家庭监测系统的设计
++ 主控采用STM32F407ZGT6    
++ 192KB的flash   1MB的RAM
++ 系统采用FreeRTOS    屏幕框架采用LVGL V8.20
++ 传感器：
+  + SHT30温湿度传感器
+  + SGP30 CO2/TVOC传感器
+  + 涂鸦WBR3模组
+  + 4.3" 电容屏
++ 手机APP 涂鸦智能智能生活
++ 相关平台：涂鸦开发者平台、LVGL
++ 开发环境：vscode+codeblocks+keil
++ 标准库函数
+
+# 更新日志
+## V1.0
+第一次上传，基础功能完善
+
 ## V2.1   
 #### 2023.05.24
 #### 修改：
